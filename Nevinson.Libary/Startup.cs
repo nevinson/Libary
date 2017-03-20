@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nevinson.Libary.Data;
+using Nevinson.Libary.Service;
 
 namespace Nevinson.Libary
 {
@@ -29,6 +32,21 @@ namespace Nevinson.Libary
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            // Add framework services.
+            services.AddScoped<ILibraryCard, LibraryCardService>(); // so that Bookservice is injected into controllers and other components that request IBook
+            services.AddScoped<ILibraryBranch, LibraryBranchService>(); // so that Bookservice is injected into controllers and other components that request IBook
+            services.AddScoped<IPatron, PatronService>(); // so that Bookservice is injected into controllers and other components that request IBook
+            services.AddScoped<ICheckout, CheckoutService>(); // so that Bookservice is injected into controllers and other components that request IBook
+            services.AddScoped<ILibraryAsset, LibraryAssetService>(); // so that Bookservice is injected into controllers and other components that request IBook
+            services.AddScoped<IBook, BookService>(); // so that Bookservice is injected into controllers and other components that request IBook
+            services.AddScoped<IVideo, VideoService>(); // so that Bookservice is injected into controllers and other components that request IBook
+            services.AddScoped<IStatus, StatusService>(); // so that Bookservice is injected into controllers and other components that request IBook
+
+            // configure ef and dbcontext.
+            // ef can now work with other databases, including non-relational
+            services.AddDbContext<LibraryDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("LibraryConnection")));
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
